@@ -33,9 +33,11 @@ export default function Registro() {
             <div style={s.logoMark}>P</div>
             <div style={s.iconCircle}>✓</div>
             <h1 style={s.heading}>ACCESO CONFIRMADO</h1>
-            <p style={s.sub}>Bienvenido. Nos vemos dentro.</p>
+            <p style={s.sub}>Pronto te llegará una invitación.</p>
             <div style={s.divider} />
-            <p style={s.fine}>Ya puedes cerrar esta ventana.</p>
+            <p style={{ ...s.fine, fontFamily: FONT_DISPLAY, fontSize: 15, color: RED_DIM, letterSpacing: '0.15em' }}>
+              The House Always Wins
+            </p>
           </div>
         </div>
       </>
