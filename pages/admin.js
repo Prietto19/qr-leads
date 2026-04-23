@@ -1,10 +1,18 @@
 import { useState, useEffect, useCallback } from 'react'
+import QRCode from 'qrcode'
 import { supabase } from '../lib/supabase'
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+
+async function generarDataUrl(id) {
+  return QRCode.toDataURL(`${BASE_URL}/registro?id=${id}`, { margin: 1 })
+}
 
 export default function Admin() {
   const [generando, setGenerando] = useState(false)
   const [qrsGenerados, setQrsGenerados] = useState([])
   const [qrCodes, setQrCodes] = useState([])
+  const [qrImgs, setQrImgs] = useState({})
   const [leads, setLeads] = useState([])
   const [reactivando, setReactivando] = useState(null)
 
@@ -13,7 +21,14 @@ export default function Admin() {
       supabase.from('qr_codes').select('*').order('creado_en', { ascending: false }),
       supabase.from('leads').select('*').order('fecha', { ascending: false }),
     ])
-    if (qrs) setQrCodes(qrs)
+    if (qrs) {
+      setQrCodes(qrs)
+      const imgs = {}
+      await Promise.all(qrs.map(async (qr) => {
+        imgs[qr.id] = await generarDataUrl(qr.id)
+      }))
+      setQrImgs(imgs)
+    }
     if (ls) setLeads(ls)
   }, [])
 
@@ -110,7 +125,7 @@ export default function Admin() {
               <table style={s.table}>
                 <thead>
                   <tr>
-                    {['ID', 'Estado', 'Fecha de uso', ''].map((col) => (
+                    {['QR', 'ID', 'Estado', 'Fecha de uso', ''].map((col) => (
                       <th key={col} style={s.th}>{col}</th>
                     ))}
                   </tr>
@@ -118,6 +133,13 @@ export default function Admin() {
                 <tbody>
                   {qrCodes.map((qr) => (
                     <tr key={qr.id} style={s.tr}>
+                      <td style={s.td}>
+                        {qrImgs[qr.id] ? (
+                          <img src={qrImgs[qr.id]} alt={qr.id} style={{ width: 64, height: 64, display: 'block', cursor: 'pointer' }} onClick={() => descargarQR(qrImgs[qr.id], qr.id)} title="Clic para descargar" />
+                        ) : (
+                          <div style={{ width: 64, height: 64, background: '#f1f5f9', borderRadius: 6 }} />
+                        )}
+                      </td>
                       <td style={s.td}>
                         <span style={s.code}>{qr.id}</span>
                       </td>
