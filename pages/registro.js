@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 
 export default function Registro() {
   const { query } = useRouter()
@@ -8,18 +9,16 @@ export default function Registro() {
   const [nombre, setNombre] = useState('')
   const [telefono, setTelefono] = useState('')
   const [cargando, setCargando] = useState(false)
-  const [resultado, setResultado] = useState(null) // 'exito' | 'error'
+  const [resultado, setResultado] = useState(null)
 
   async function handleSubmit(e) {
     e.preventDefault()
     setCargando(true)
-
     const res = await fetch('/api/registrar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, nombre, telefono }),
     })
-
     const data = await res.json()
     setCargando(false)
     setResultado(data.ok ? 'exito' : 'error')
@@ -27,190 +26,268 @@ export default function Registro() {
 
   if (resultado === 'exito') {
     return (
-      <div style={styles.page}>
-        <div style={styles.card}>
-          <div style={styles.icon}>✓</div>
-          <h1 style={styles.titulo}>¡Registrado correctamente!</h1>
-          <p style={styles.subtitulo}>Gracias por participar. Ya puedes cerrar esta ventana.</p>
+      <>
+        <Head><title>Acceso confirmado</title></Head>
+        <div style={s.page}>
+          <div style={s.card}>
+            <div style={s.logoMark}>P</div>
+            <div style={s.iconCircle}>✓</div>
+            <h1 style={s.heading}>ACCESO CONFIRMADO</h1>
+            <p style={s.sub}>Bienvenido. Nos vemos dentro.</p>
+            <div style={s.divider} />
+            <p style={s.fine}>Ya puedes cerrar esta ventana.</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   if (resultado === 'error') {
     return (
-      <div style={styles.page}>
-        <div style={{ ...styles.card, borderTop: '4px solid #ef4444' }}>
-          <div style={{ ...styles.icon, background: '#fef2f2', color: '#ef4444' }}>✕</div>
-          <h1 style={{ ...styles.titulo, color: '#ef4444' }}>QR no válido</h1>
-          <p style={styles.subtitulo}>Este QR ya fue utilizado o no es válido.</p>
+      <>
+        <Head><title>Acceso denegado</title></Head>
+        <div style={s.page}>
+          <div style={s.card}>
+            <div style={s.logoMark}>P</div>
+            <div style={{ ...s.iconCircle, borderColor: '#550000', color: '#550000' }}>✕</div>
+            <h1 style={{ ...s.heading, color: '#661111' }}>ACCESO DENEGADO</h1>
+            <p style={s.sub}>Este QR ya fue utilizado o no es válido.</p>
+            <div style={s.divider} />
+            <p style={s.fine}>Contacta con el organizador si crees que es un error.</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   const puedeEnviar = telefono.length >= 9 && !cargando
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.titulo}>Regístrate</h1>
-        <p style={styles.subtitulo}>Completa el formulario para participar.</p>
+    <>
+      <Head>
+        <title>Acceso exclusivo</title>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+      <div style={s.page}>
+        <div style={s.card}>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.campo}>
-            <label style={styles.label}>
-              Nombre <span style={styles.opcional}>(opcional)</span>
-            </label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              placeholder="Tu nombre"
-              style={styles.input}
-              autoComplete="name"
-            />
+          <div style={s.logoMark}>P</div>
+
+          <div style={s.taglineWrap}>
+            <span style={s.line} />
+            <span style={s.tagline}>ACCESO EXCLUSIVO</span>
+            <span style={s.line} />
           </div>
 
-          <div style={styles.campo}>
-            <label style={styles.label}>
-              Teléfono <span style={styles.requerido}>*</span>
-            </label>
-            <input
-              type="tel"
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-              placeholder="612 345 678"
-              required
-              style={styles.input}
-              autoComplete="tel"
-              inputMode="tel"
-            />
-            {telefono.length > 0 && telefono.length < 9 && (
-              <p style={styles.aviso}>Mínimo 9 dígitos</p>
-            )}
-          </div>
+          <h1 style={s.heading}>CONFIRMA TU ACCESO</h1>
+          <p style={s.sub}>Introduce tus datos para reservar tu plaza.</p>
 
-          <button
-            type="submit"
-            disabled={!puedeEnviar}
-            style={{
-              ...styles.boton,
-              ...(puedeEnviar ? styles.botonActivo : styles.botonDesactivado),
-            }}
-          >
-            {cargando ? 'Enviando...' : 'Confirmar registro'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} style={s.form}>
+            <div style={s.campo}>
+              <label style={s.label}>
+                NOMBRE <span style={s.opcional}>— opcional</span>
+              </label>
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Tu nombre"
+                style={s.input}
+                autoComplete="name"
+              />
+            </div>
+
+            <div style={s.campo}>
+              <label style={s.label}>TELÉFONO</label>
+              <input
+                type="tel"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="612 345 678"
+                required
+                style={s.input}
+                autoComplete="tel"
+                inputMode="tel"
+              />
+              {telefono.length > 0 && telefono.length < 9 && (
+                <p style={s.aviso}>Mínimo 9 dígitos</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={!puedeEnviar}
+              style={{ ...s.boton, ...(puedeEnviar ? s.botonActivo : s.botonDesactivado) }}
+            >
+              {cargando ? 'CONFIRMANDO...' : 'CONFIRMAR ACCESO'}
+            </button>
+          </form>
+
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
-const styles = {
+const RED = '#C8000A'
+const RED_DIM = '#8B0006'
+const FONT_DISPLAY = '"Cormorant Garamond", Georgia, serif'
+const FONT_BODY = '"Montserrat", system-ui, sans-serif'
+
+const s = {
   page: {
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#f8fafc',
-    padding: '24px 16px',
+    background: '#080808',
+    padding: '40px 16px',
     boxSizing: 'border-box',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontFamily: FONT_BODY,
   },
   card: {
-    background: '#ffffff',
-    borderRadius: 16,
-    padding: '40px 32px',
     width: '100%',
-    maxWidth: 420,
-    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-    borderTop: '4px solid #6366f1',
-    boxSizing: 'border-box',
+    maxWidth: 400,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 0,
   },
-  icon: {
-    width: 56,
-    height: 56,
-    borderRadius: '50%',
-    background: '#eef2ff',
-    color: '#6366f1',
-    fontSize: 24,
+  logoMark: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 72,
     fontWeight: 700,
+    color: RED,
+    lineHeight: 1,
+    marginBottom: 24,
+    letterSpacing: '-2px',
+    textShadow: `0 0 40px ${RED_DIM}`,
+  },
+  taglineWrap: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 20px',
+    gap: 12,
+    marginBottom: 20,
+    width: '100%',
   },
-  titulo: {
-    margin: '0 0 8px',
-    fontSize: 22,
+  line: {
+    flex: 1,
+    height: 1,
+    background: '#2a0a0a',
+  },
+  tagline: {
+    fontSize: 10,
+    letterSpacing: '0.3em',
+    color: RED_DIM,
+    fontFamily: FONT_BODY,
+    fontWeight: 600,
+    whiteSpace: 'nowrap',
+  },
+  heading: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 28,
     fontWeight: 700,
-    color: '#0f172a',
+    color: '#f0e8e8',
+    letterSpacing: '0.12em',
     textAlign: 'center',
+    margin: '0 0 10px',
   },
-  subtitulo: {
-    margin: '0 0 28px',
-    fontSize: 14,
-    color: '#64748b',
+  sub: {
+    fontSize: 12,
+    color: '#5a4040',
+    letterSpacing: '0.08em',
     textAlign: 'center',
-    lineHeight: 1.5,
+    margin: '0 0 32px',
+    fontWeight: 500,
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
     gap: 20,
+    width: '100%',
   },
   campo: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 6,
+    gap: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: 600,
-    color: '#374151',
+    letterSpacing: '0.2em',
+    color: '#6a3030',
   },
   opcional: {
     fontWeight: 400,
-    color: '#94a3b8',
-    fontSize: 12,
-  },
-  requerido: {
-    color: '#ef4444',
+    color: '#3a2020',
+    letterSpacing: '0.05em',
   },
   input: {
-    border: '1.5px solid #e2e8f0',
-    borderRadius: 10,
-    padding: '12px 14px',
-    fontSize: 16,
-    color: '#0f172a',
+    background: '#110808',
+    border: '1px solid #2e0e0e',
+    borderRadius: 4,
+    padding: '14px 16px',
+    fontSize: 15,
+    color: '#f0e0e0',
     outline: 'none',
     width: '100%',
     boxSizing: 'border-box',
-    transition: 'border-color 0.15s',
+    fontFamily: FONT_BODY,
+    letterSpacing: '0.04em',
   },
   aviso: {
     margin: 0,
-    fontSize: 12,
-    color: '#f59e0b',
+    fontSize: 11,
+    color: RED_DIM,
+    letterSpacing: '0.05em',
   },
   boton: {
-    padding: '14px',
-    borderRadius: 10,
+    marginTop: 8,
+    padding: '16px',
     border: 'none',
-    fontSize: 16,
-    fontWeight: 600,
+    borderRadius: 4,
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.2em',
     cursor: 'pointer',
-    transition: 'opacity 0.15s, background 0.15s',
-    marginTop: 4,
+    fontFamily: FONT_BODY,
+    transition: 'opacity 0.2s',
+    width: '100%',
   },
   botonActivo: {
-    background: '#6366f1',
-    color: '#ffffff',
+    background: RED,
+    color: '#fff',
   },
   botonDesactivado: {
-    background: '#e2e8f0',
-    color: '#94a3b8',
+    background: '#1a0808',
+    color: '#3a2020',
     cursor: 'not-allowed',
+  },
+  iconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: '50%',
+    border: `2px solid ${RED}`,
+    color: RED,
+    fontSize: 22,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  divider: {
+    width: 40,
+    height: 1,
+    background: '#2a0a0a',
+    margin: '20px auto',
+  },
+  fine: {
+    fontSize: 11,
+    color: '#3a2020',
+    letterSpacing: '0.06em',
+    textAlign: 'center',
   },
 }
